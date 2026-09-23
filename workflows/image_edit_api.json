@@ -1,0 +1,88 @@
+{
+  "1": {
+    "class_type": "ZenImageEditCheckpointLoader",
+    "inputs": {
+      "checkpoint": "zen_image_edit_qwen21_single.safetensors",
+      "te_precision": "auto",
+      "shift": 5.0
+    }
+  },
+  "2": {
+    "class_type": "TextEncodeQwenImage21",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "prompt": "turn the red square into a yellow circle",
+      "negative_prompt": "",
+      "resolution": 512,
+      "vae": [
+        "1",
+        2
+      ],
+      "images": {
+        "image_1": [
+          "6",
+          0
+        ]
+      }
+    }
+  },
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "2",
+        0
+      ],
+      "negative": [
+        "2",
+        1
+      ],
+      "latent_image": [
+        "2",
+        2
+      ],
+      "seed": 42,
+      "steps": 20,
+      "cfg": 4.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "4": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "5": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "4",
+        0
+      ],
+      "filename_prefix": "ZenImageEdit"
+    }
+  },
+  "6": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "reference.png"
+    }
+  }
+}

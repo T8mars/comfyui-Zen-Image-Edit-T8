@@ -1,0 +1,12 @@
+# Files useful in the source repository but unnecessary in the Manager package.
+.github/
+tests/
+scripts/
+workflows/*_api.json
+
+# Local assets must never enter a release archive.
+roadmap.md
+sources/
+models/
+.qa/
+outputs/

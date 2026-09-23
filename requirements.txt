@@ -1,0 +1,4 @@
+# Install into the same Python environment as ComfyUI.
+transformers>=5.17,<6
+tokenizers>=0.23,<1
+safetensors>=0.8,<1

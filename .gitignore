@@ -1,0 +1,11 @@
+# Local planning document; keep out of GitHub and release packages.
+/roadmap.md
+
+# Downloaded weights, converted checkpoints, and local validation runtime.
+/sources/
+/models/
+/.qa/
+/outputs/
+__pycache__/
+*.py[cod]
+.pytest_cache/
