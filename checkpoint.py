@@ -21,10 +21,21 @@ PREFIXES = {part: f"zen.{part}." for part in ("diffusion", "vae", "student", "fu
 
 def metadata(path: str | Path) -> dict[str, str]:
     with Path(path).open("rb") as source:
-        header_size = struct.unpack("<Q", source.read(8))[0]
+        size_bytes = source.read(8)
+        if len(size_bytes) != 8:
+            raise ValueError(f"Invalid safetensors header: {path}")
+        header_size = struct.unpack("<Q", size_bytes)[0]
         if header_size > 100_000_000:
             raise ValueError("Safetensors header is too large")
-        result = json.loads(source.read(header_size)).get("__metadata__", {})
+        header_bytes = source.read(header_size)
+        if len(header_bytes) != header_size:
+            raise ValueError(f"Truncated safetensors header: {path}")
+        header = json.loads(header_bytes)
+        if not isinstance(header, dict):
+            raise ValueError(f"Invalid safetensors header: {path}")
+        result = header.get("__metadata__", {})
+        if not isinstance(result, dict):
+            raise ValueError(f"Invalid safetensors metadata: {path}")
     if result.get("zen_format") != FORMAT:
         raise ValueError(f"{path} is not a {FORMAT} checkpoint")
     return result

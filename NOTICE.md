@@ -1,8 +1,8 @@
 # Attribution
 
-`fusion_lib.py` is adapted from the text-fusion implementation in
-[AiArtLab/zen-image-edit](https://huggingface.co/AiArtLab/zen-image-edit),
-published under Apache-2.0. The accompanying `LICENSE` is retained.
+`fusion_lib.py` is adapted from the Apache-2.0 implementation in
+[recoilme/zen-image-edit-comfyui](https://github.com/recoilme/zen-image-edit-comfyui/blob/main/fusion_lib.py).
+The accompanying `LICENSE` is retained. The model weights have separate terms below.
 
 The converted checkpoint combines the following independently published weights:
 

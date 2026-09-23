@@ -12,7 +12,10 @@ import os
 import struct
 from pathlib import Path
 
-from convert import read_header
+if __package__:
+    from .convert import read_header
+else:
+    from convert import read_header
 
 
 def extract(shard: Path, config_path: Path, output: Path) -> None:

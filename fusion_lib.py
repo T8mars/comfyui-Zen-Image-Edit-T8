@@ -1,8 +1,8 @@
 """Vendored text-fusion block of zen-image-edit: pure torch, no diffusers.
 
-Copied from `transformer.py` of https://huggingface.co/AiArtLab/zen-image-edit so this ComfyUI node
-does not need that repo on `sys.path` (nor diffusers installed). Keep in sync with `transformer.py`:
-same classes, same `text_fusion_config` keys.
+Adapted from the Apache-2.0 `fusion_lib.py` in
+https://github.com/recoilme/zen-image-edit-comfyui. It implements the same adapter
+classes and configuration as AiArtLab's `transformer.py`, without Diffusers at runtime.
 """
 import torch
 import torch.nn as nn

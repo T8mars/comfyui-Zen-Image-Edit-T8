@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "workflows"
+API_OUT = ROOT / "api_workflows"
 CHECKPOINT = "zen_image_edit_qwen21_single.safetensors"
 
 
@@ -121,9 +122,11 @@ def ui(edit: bool) -> dict:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    API_OUT.mkdir(parents=True, exist_ok=True)
     for name, edit in (("text_to_image", False), ("image_edit", True)):
         for kind, data in (("api", api(edit)), ("ui", ui(edit))):
-            (OUT / f"{name}_{kind}.json").write_text(
+            destination = API_OUT if kind == "api" else OUT
+            (destination / f"{name}_{kind}.json").write_text(
                 json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
             )
 

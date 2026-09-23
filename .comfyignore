@@ -2,7 +2,6 @@
 .github/
 tests/
 scripts/
-workflows/*_api.json
 
 # Local assets must never enter a release archive.
 roadmap.md

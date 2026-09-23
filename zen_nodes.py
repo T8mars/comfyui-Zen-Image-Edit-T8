@@ -50,11 +50,17 @@ def checkpoint_fingerprint(name: str):
     return (str(path.resolve()), stat.st_size, stat.st_mtime_ns)
 
 
+def te_dtype(precision: str) -> torch.dtype:
+    if precision not in ("auto", "bf16"):
+        raise ValueError("Zen Image Edit requires BF16 text encoding; FP16 produced non-finite samples in validation")
+    if torch.cuda.is_available() and not torch.cuda.is_bf16_supported():
+        raise ValueError("Zen Image Edit requires BF16 support in the CUDA/PyTorch runtime")
+    return torch.bfloat16
+
+
 def load_clip(path: Path, precision: str):
+    dtype = te_dtype(precision)
     metadata(path)
-    if precision == "auto":
-        precision = "bf16" if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else "fp16"
-    dtype = {"bf16": torch.bfloat16, "fp16": torch.float16}[precision]
     target = ClipTarget(ZenTokenizer, ZenClipModel)
     target.params["checkpoint_path"] = str(path)
     model_options = {"dtype": dtype, "initial_device": torch.device("cpu"),
@@ -97,7 +103,7 @@ class ZenImageEditCheckpointLoader(io.ComfyNode):
             category="loaders/zen image edit",
             inputs=[
                 io.Combo.Input("checkpoint", options=checkpoint_choices()),
-                io.Combo.Input("te_precision", options=["auto", "bf16", "fp16"], default="auto"),
+                io.Combo.Input("te_precision", options=["auto", "bf16"], default="auto"),
                 io.Float.Input("shift", default=5.0, min=0.01, max=20.0, step=0.01),
             ],
             outputs=[io.Model.Output(display_name="MODEL"),
@@ -111,6 +117,7 @@ class ZenImageEditCheckpointLoader(io.ComfyNode):
 
     @classmethod
     def execute(cls, checkpoint, te_precision="auto", shift=5.0):
+        te_dtype(te_precision)
         path = checkpoint_path(checkpoint)
         metadata(path)
         model = load_diffusion(path)
@@ -130,7 +137,7 @@ class ZenImageEditCLIPLoader(io.ComfyNode):
             category="loaders/zen image edit",
             inputs=[
                 io.Combo.Input("checkpoint", options=checkpoint_choices()),
-                io.Combo.Input("te_precision", options=["auto", "bf16", "fp16"], default="auto"),
+                io.Combo.Input("te_precision", options=["auto", "bf16"], default="auto"),
             ],
             outputs=[io.Clip.Output(display_name="CLIP")],
         )
