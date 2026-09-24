@@ -1,0 +1,248 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_2.1_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoaderBypassModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "qwen_image_2.1_viggle_turbo_v0.2.1_r256_comfy.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "TextEncodeQwenImage21",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "prompt": "A red fox in a snowy forest",
+      "negative_prompt": "",
+      "resolution": 512
+    }
+  },
+  "6": {
+    "class_type": "StringFormat",
+    "inputs": {
+      "values.a": [
+        "5",
+        2
+      ],
+      "f_string": "a ** (0.5 + 0.4 * ({a[samples].shape[2]} * {a[samples].shape[3]} - 256) / 7936)"
+    }
+  },
+  "7": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": [
+        "6",
+        0
+      ],
+      "values.a": [
+        "24",
+        0
+      ]
+    }
+  },
+  "13": {
+    "class_type": "StringFormat",
+    "inputs": {
+      "values.a": [
+        "8",
+        0
+      ],
+      "values.b": [
+        "9",
+        0
+      ],
+      "values.c": [
+        "10",
+        0
+      ],
+      "values.d": [
+        "11",
+        0
+      ],
+      "values.e": [
+        "12",
+        0
+      ],
+      "f_string": "1, {a:.10f}, {b:.10f}, {c:.10f}, {d:.10f}, {e:.10f}, 0"
+    }
+  },
+  "14": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": [
+        "13",
+        0
+      ]
+    }
+  },
+  "15": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "23",
+        0
+      ],
+      "conditioning": [
+        "5",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    }
+  },
+  "17": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "18": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "16",
+        0
+      ],
+      "guider": [
+        "15",
+        0
+      ],
+      "sampler": [
+        "17",
+        0
+      ],
+      "sigmas": [
+        "14",
+        0
+      ],
+      "latent_image": [
+        "5",
+        2
+      ]
+    }
+  },
+  "19": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "18",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    }
+  },
+  "20": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "19",
+        0
+      ],
+      "filename_prefix": "ViggleV021"
+    }
+  },
+  "23": {
+    "class_type": "QwenImage21Cache",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "device": "off",
+      "dtype": "default"
+    }
+  },
+  "24": {
+    "class_type": "PrimitiveFloat",
+    "inputs": {
+      "value": 2.718281828459045
+    }
+  },
+  "8": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "a / (a + 1 / 0.9375 - 1)",
+      "values.a": [
+        "7",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "a / (a + 1 / 0.875 - 1)",
+      "values.a": [
+        "7",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "a / (a + 1 / 0.75 - 1)",
+      "values.a": [
+        "7",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "a / (a + 1 / 0.5 - 1)",
+      "values.a": [
+        "7",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "a / (a + 1 / 0.25 - 1)",
+      "values.a": [
+        "7",
+        0
+      ]
+    }
+  }
+}

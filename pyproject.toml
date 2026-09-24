@@ -1,6 +1,6 @@
 [project]
 name = "zen-image-edit-t8"
-version = "0.1.2"
+version = "0.1.3"
 description = "Native ComfyUI nodes for Zen Image Edit with a single-file Qwen-Image-2.1 checkpoint and student text encoder."
 readme = "README.md"
 requires-python = ">=3.10"

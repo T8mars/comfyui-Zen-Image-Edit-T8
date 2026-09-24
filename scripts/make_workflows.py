@@ -21,7 +21,7 @@ def api(edit: bool) -> dict:
         "resolution": 512,
     }
     if edit:
-        encoder.update({"vae": ["1", 2], "images": {"image_1": ["6", 0]}})
+        encoder.update({"vae": ["1", 2], "images.image_1": ["6", 0]})
     result = {
         "1": {"class_type": "ZenImageEditCheckpointLoader",
               "inputs": {"checkpoint": CHECKPOINT, "te_precision": "auto", "shift": 5.0}},

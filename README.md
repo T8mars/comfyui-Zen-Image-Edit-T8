@@ -8,7 +8,26 @@
 
 Zen Image Edit brings [AiArtLab/zen-image-edit](https://huggingface.co/AiArtLab/zen-image-edit) to ComfyUI as a single-file checkpoint. Its Qwen3.5-0.8B multimodal text encoder and fusion adapter produce a native `CLIP` output; image generation and editing continue through ComfyUI's Qwen-Image-2.1 conditioning, sampler, and VAE nodes. No Diffusers pipeline is required at runtime.
 
-### Install
+### Viggle Turbo v0.2.1 — native LoRA
+
+[Download LoRAs](https://huggingface.co/t8star/Zen-Image-Edit-Comfy/tree/main/viggle-v0.2.1) · [Text-to-image workflow](workflows/viggle_v021_text_to_image_ui.json) · [Image-edit workflow](workflows/viggle_v021_image_edit_ui.json)
+
+These converted [Viggle](https://huggingface.co/Viggle/Qwen-Image-2.1-viggle-turbo) adapters work with **ComfyUI's built-in nodes**. The Zen extension is not required. Use ComfyUI `0.37.0` with frontend `1.53.6` or newer.
+
+| File | Size | Folder |
+|---|---:|---|
+| `qwen_image_2.1_viggle_turbo_v0.2.1_r256_comfy.safetensors` | 1.76 GB | `models/loras/` |
+| `qwen_image_2.1_viggle_turbo_v0.2.1_r128_comfy.safetensors` | 881 MB | `models/loras/` |
+
+Choose one adapter. Download the separate base files from [Comfy-Org/Qwen-Image-2.1](https://huggingface.co/Comfy-Org/Qwen-Image-2.1): `qwen_image_2.1_bf16.safetensors` → `models/diffusion_models/`, `qwen3vl_8b_int8_convrot.safetensors` → `models/text_encoders/`, and `qwen_image_2.1_vae_bf16.safetensors` → `models/vae/`. Open a workflow and select the files; for editing, select your reference image in `LoadImage`.
+
+Use the built-in **Load LoRA (Bypass, Model Only) (for debugging)** (`LoraLoaderBypassModelOnly`) at strength **1.0**. It computes the adapter separately, preserving updates that ordinary merged LoRA loading can round away. This conversion retains all 227 source projection adapters, including both halves of ComfyUI's fused MLP; it contains no base weights. The larger file size comes from lossless block-diagonal packing.
+
+The workflows use **Euler, six steps, no CFG**, automatically shift the author's sigma schedule to the actual output size, and disable Qwen prefix caching. Keep the schedule group connected. The supported base is **BF16 DiT**; INT8 DiT has a fused MLP path that can skip bypass hooks. Use the original Qwen3-VL-8B encoder, not the Zen student encoder. The built-in bypass loader is experimental. [API examples](api_workflows/) are also included.
+
+Validated with all custom nodes disabled: 512 px text-to-image and editing, complete native adapter mapping, and schedule equivalence. This is functional validation, not a full image-quality benchmark. Weights retain the upstream **Qwen Research License**; see the [conversion notice](https://huggingface.co/t8star/Zen-Image-Edit-Comfy/blob/main/viggle-v0.2.1/NOTICE).
+
+### Zen installation
 
 1. Update ComfyUI to a build with native Qwen-Image-2.1 support (validated on ComfyUI `0.37.0`). Install **Zen Image Edit T8** from ComfyUI Manager, or clone this repository into `ComfyUI/custom_nodes/`.
 2. If installing manually, run `python -m pip install -r ComfyUI/custom_nodes/comfyui-Zen-Image-Edit-T8/requirements.txt` with ComfyUI's Python interpreter.
@@ -25,7 +44,26 @@ The node code is Apache-2.0. The checkpoint combines weights from [AiArtLab](htt
 
 本节点将 [AiArtLab/zen-image-edit](https://huggingface.co/AiArtLab/zen-image-edit) 接入 ComfyUI。单文件模型内含 Qwen-Image-2.1 DiT、VAE、Qwen3.5-0.8B 多模态文本编码器及融合适配器。节点输出原生 `CLIP`，可继续使用 ComfyUI 的 Qwen-Image-2.1 条件编码、采样与 VAE 节点；运行时不依赖 Diffusers 管道。
 
-### 安装
+### Viggle Turbo v0.2.1：原生 LoRA
+
+[下载 LoRA](https://huggingface.co/t8star/Zen-Image-Edit-Comfy/tree/main/viggle-v0.2.1) · [文生图工作流](workflows/viggle_v021_text_to_image_ui.json) · [图片编辑工作流](workflows/viggle_v021_image_edit_ui.json)
+
+转换后的 [Viggle](https://huggingface.co/Viggle/Qwen-Image-2.1-viggle-turbo) LoRA **直接使用 ComfyUI 内置节点，无需安装 Zen 插件**。请使用 ComfyUI `0.37.0`、前端 `1.53.6` 或更新版本。
+
+| 文件 | 大小 | 存放目录 |
+|---|---:|---|
+| `qwen_image_2.1_viggle_turbo_v0.2.1_r256_comfy.safetensors` | 1.76 GB | `models/loras/` |
+| `qwen_image_2.1_viggle_turbo_v0.2.1_r128_comfy.safetensors` | 881 MB | `models/loras/` |
+
+两种 LoRA 任选其一。另从 [Comfy-Org/Qwen-Image-2.1](https://huggingface.co/Comfy-Org/Qwen-Image-2.1) 下载底座：`qwen_image_2.1_bf16.safetensors` 放入 `models/diffusion_models/`，`qwen3vl_8b_int8_convrot.safetensors` 放入 `models/text_encoders/`，`qwen_image_2.1_vae_bf16.safetensors` 放入 `models/vae/`。导入工作流并选择文件；编辑时在 `LoadImage` 选择参考图。
+
+使用内置 **Load LoRA (Bypass, Model Only) (for debugging)**（`LoraLoaderBypassModelOnly`），强度 **1.0**。它独立计算 LoRA 分支，保留普通合并加载可能因舍入而丢失的更新。转换完整保留原始 227 组投影适配器，包括 ComfyUI 融合 MLP 的两个分支；文件不含底座权重。体积增加来自无损块对角打包。
+
+工作流采用 **Euler、六步、无 CFG**，按实际输出尺寸自动调整作者的 sigma 日程，并关闭 Qwen 前缀缓存。保留调度组连线。支持的底座为 **BF16 DiT**；INT8 DiT 的融合 MLP 路径可能跳过 bypass hook。文本编码器使用原版 Qwen3-VL-8B，不使用 Zen student。内置 bypass 加载器目前标为实验性功能。另附 [API 示例](api_workflows/)。
+
+已在禁用全部自定义节点的环境验证 512 像素文生图与编辑、全部适配器映射和调度等价性；这属于功能验证，不代表完整画质基准。权重沿用上游 **Qwen Research License**，详见[转换声明](https://huggingface.co/t8star/Zen-Image-Edit-Comfy/blob/main/viggle-v0.2.1/NOTICE)。
+
+### Zen 安装
 
 1. 更新到原生支持 Qwen-Image-2.1 的 ComfyUI（已在 `0.37.0` 验证）。在 ComfyUI Manager 安装 **Zen Image Edit T8**，或将本仓库克隆至 `ComfyUI/custom_nodes/`。
 2. 手动安装时，使用 ComfyUI 对应的 Python 执行 `python -m pip install -r ComfyUI/custom_nodes/comfyui-Zen-Image-Edit-T8/requirements.txt`。
